@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kenya Road Safety Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #08110b;
+      --card: rgba(16, 28, 20, 0.92);
+      --line: rgba(91, 171, 91, 0.16);
+      --text: #ebf6ec;
+      --muted: #97b29a;
+      --green: #1bb35e;
+      --gold: #d8a32d;
+      --red: #d85757;
+      --blue: #5a97ff;
+      --mono: 'JetBrains Mono', monospace;
+      --font: 'Sora', sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(27, 179, 94, 0.18), transparent 32%),
+        radial-gradient(circle at bottom left, rgba(90, 151, 255, 0.12), transparent 28%),
+        linear-gradient(180deg, #071009 0%, #08110b 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    .hero, .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
+    }
+
+    .hero {
+      padding: 28px;
+      background: linear-gradient(135deg, rgba(27, 179, 94, 0.12), rgba(16, 28, 20, 0.95));
+    }
+
+    .eyebrow {
+      font-family: var(--mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #7de0a0;
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .lead {
+      max-width: 760px;
+      color: var(--muted);
+      line-height: 1.8;
+      margin: 16px 0 0;
+    }
+
+    .status {
+      margin-top: 18px;
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); }
+    .dot.ok { background: var(--green); }
+    .dot.err { background: var(--red); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .card {
+      grid-column: span 12;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: visible;
+      z-index: 1;
+    }
+
+    .filter-card {
+      z-index: 2000;
+    }
+
+    .filter-card:has(.custom-select.open) {
+      z-index: 3000;
+    }
+
+    .half { grid-column: span 6; }
+    .full { grid-column: span 12; }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      align-items: end;
+    }
+
+    .control label, .label {
+      display: block;
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    button {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      padding: 12px 14px;
+      font-family: var(--font);
+      font-size: 14px;
+    }
+
+    button {
+      cursor: pointer;
+      background: linear-gradient(135deg, rgba(27, 179, 94, 0.2), rgba(90, 151, 255, 0.12));
+      font-weight: 700;
+    }
+
+    .custom-select {
+      position: relative;
+      z-index: 5;
+    }
+
+    .custom-select.open {
+      z-index: 1000;
+    }
+
+    .select-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .select-trigger:hover,
+    .custom-select.open .select-trigger {
+      border-color: rgba(90, 151, 255, 0.34);
+      box-shadow: 0 0 0 4px rgba(90, 151, 255, 0.08);
+    }
+
+    .select-value {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .select-arrow {
+      font-size: 12px;
+      color: var(--muted);
+      transition: transform 0.2s ease;
+    }
+
+    .custom-select.open .select-arrow {
+      transform: rotate(180deg);
+    }
+
+    .select-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      right: 0;
+      z-index: 1100;
+      display: none;
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 8px;
+      border-radius: 18px;
+      border: 1px solid rgba(90, 151, 255, 0.18);
+      background: rgba(8, 17, 11, 0.98);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.34);
+      backdrop-filter: blur(16px);
+    }
+
+    .custom-select.open .select-menu {
+      display: block;
+    }
+
+    .select-option {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text);
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 500;
+    }
+
+    .select-option:hover,
+    .select-option.active {
+      background: rgba(90, 151, 255, 0.16);
+      color: #fff;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .kpi {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .value {
+      margin-top: 10px;
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .sub, .section-note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .section-note { margin: 0 0 18px; }
+    h2 { margin: 0 0 4px; font-size: 18px; }
+
+    .chart-box {
+      position: relative;
+      height: 320px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      text-align: left;
+    }
+
+    th {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .risk-pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      border: 1px solid transparent;
+    }
+
+    .high { color: #ffb0b0; background: rgba(216, 87, 87, 0.18); border-color: rgba(216, 87, 87, 0.3); }
+    .medium { color: #ffdf97; background: rgba(216, 163, 45, 0.16); border-color: rgba(216, 163, 45, 0.3); }
+    .low { color: #a9f5c9; background: rgba(27, 179, 94, 0.16); border-color: rgba(27, 179, 94, 0.3); }
+
+    .empty {
+      color: var(--muted);
+      padding: 24px 0 6px;
+    }
+
+    @media (max-width: 960px) {
+      .half, .full { grid-column: span 12; }
+      .controls, .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      .shell { width: min(100% - 20px, 1180px); }
+      .hero, .card { padding: 16px; }
+      .controls, .kpi-grid { grid-template-columns: 1fr; }
+      .value { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Kenya Road Safety Analytics and Prediction System</div>
+      <h1>Interactive dashboard for the project</h1>
+      <p class="lead">
+        This version is interactive. Use the filters to narrow the dataset by county, cause code, or time of day, and the KPIs, charts, and tables will update instantly from the backend API.
+      </p>
+      <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Waiting for backend...</span></div>
+    </section>
+
+    <section class="grid">
+      <div class="card full filter-card">
+        <div class="controls">
+          <div class="control">
+            <label for="countyFilter">County</label>
+            <div class="custom-select" id="countyFilter" data-filter="county">
+              <button class="select-trigger" type="button" aria-expanded="false">
+                <span class="select-value">All counties</span>
+                <span class="select-arrow">▾</span>
+              </button>
+              <div class="select-menu"></div>
+            </div>
+          </div>
+          <div class="control">
+            <label for="causeFilter">Cause Code</label>
+            <div class="custom-select" id="causeFilter" data-filter="cause_code">
+              <button class="select-trigger" type="button" aria-expanded="false">
+                <span class="select-value">All causes</span>
+                <span class="select-arrow">▾</span>
+              </button>
+              <div class="select-menu"></div>
+            </div>
+          </div>
+          <div class="control">
+            <label for="timeFilter">Time of Day</label>
+            <div class="custom-select" id="timeFilter" data-filter="time_of_day">
+              <button class="select-trigger" type="button" aria-expanded="false">
+                <span class="select-value">All times</span>
+                <span class="select-arrow">▾</span>
+              </button>
+              <div class="select-menu"></div>
+            </div>
+          </div>
+          <div class="control">
+            <label for="resetFilters">Filters</label>
+            <button id="resetFilters" type="button">Reset Filters</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card full">
+        <div class="kpi-grid">
+          <div class="kpi"><div class="label">Total accidents</div><div id="totalAccidents" class="value">-</div><div class="sub">filtered records</div></div>
+          <div class="kpi"><div class="label">Fatal accidents</div><div id="fatalAccidents" class="value">-</div><div class="sub">fatal incidents in current filter</div></div>
+          <div class="kpi"><div class="label">Fatality rate</div><div id="fatalityRate" class="value">-</div><div class="sub">fatal share in current filter</div></div>
+          <div class="kpi"><div class="label">Counties covered</div><div id="countiesCovered" class="value">-</div><div class="sub">unique counties in filtered view</div></div>
+        </div>
+      </div>
+
+      <div class="card half">
+        <h2>Accidents by Time of Day</h2>
+        <p class="section-note">Distribution across morning, afternoon, evening and night.</p>
+        <div class="chart-box"><canvas id="timeChart"></canvas></div>
+      </div>
+
+      <div class="card half">
+        <h2>Hourly Accident Pattern</h2>
+        <p class="section-note">Accident counts by hour of day.</p>
+        <div class="chart-box"><canvas id="hourChart"></canvas></div>
+      </div>
+
+      <div class="card half">
+        <h2>Victim Categories</h2>
+        <p class="section-note">Most affected road users in the current filter.</p>
+        <div class="chart-box"><canvas id="victimChart"></canvas></div>
+      </div>
+
+      <div class="card half">
+        <h2>Top Accident Causes</h2>
+        <p class="section-note">Leading NTSA cause codes in the filtered records.</p>
+        <div class="chart-box"><canvas id="causeChart"></canvas></div>
+      </div>
+
+      <div class="card full">
+        <h2>County Risk Summary</h2>
+        <p class="section-note">County totals update with the filters. Risk level comes from your county risk export when available.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>County</th>
+              <th>Accidents</th>
+              <th>Fatalities</th>
+              <th>Fatality Rate</th>
+              <th>Avg Victims</th>
+              <th>Risk Level</th>
+            </tr>
+          </thead>
+          <tbody id="countyTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="card full">
+        <h2>Model Comparison</h2>
+        <p class="section-note">Metrics loaded from your exported model comparison CSV.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Task</th>
+              <th>Accuracy</th>
+              <th>Precision</th>
+              <th>Recall</th>
+              <th>F1</th>
+              <th>AUC</th>
+            </tr>
+          </thead>
+          <tbody id="modelTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    Chart.defaults.color = '#97b29a';
+    Chart.defaults.font.family = 'Sora, sans-serif';
+
+    const API_BASE = 'http://127.0.0.1:8000';
+    const TIME_ORDER = ['Morning', 'Afternoon', 'Evening', 'Night', 'Unknown'];
+    const palette = ['#1bb35e', '#5a97ff', '#d8a32d', '#d85757', '#50c7d1', '#8ecf72', '#d0e26f'];
+    const FILTER_STORAGE_KEY = 'kenya-road-safety-filters';
+
+    const state = {
+      charts: {},
+      models: [],
+      countyRiskLookup: {},
+      filters: {
+        county: '',
+        cause_code: '',
+        time_of_day: '',
+      },
+    };
+
+    function setStatus(ok, text) {
+      const dot = document.getElementById('statusDot');
+      const label = document.getElementById('statusText');
+      dot.className = `dot ${ok ? 'ok' : 'err'}`;
+      label.textContent = text;
+    }
+
+    function formatMetric(value) {
+      return value === null || value === undefined || Number.isNaN(value) ? 'N/A' : value;
+    }
+
+    function riskClass(level) {
+      if (level === 'High Risk') return 'high';
+      if (level === 'Medium Risk') return 'medium';
+      return 'low';
+    }
+
+    function countBy(records, key) {
+      const map = new Map();
+      records.forEach((record) => {
+        const value = record[key] || 'Unknown';
+        map.set(value, (map.get(value) || 0) + 1);
+      });
+      return Array.from(map.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+    }
+
+    function countHours(records) {
+      const hours = Array.from({ length: 24 }, (_, hour) => ({ hour, count: 0 }));
+      records.forEach((record) => {
+        if (Number.isInteger(record.hour) && record.hour >= 0 && record.hour <= 23) {
+          hours[record.hour].count += 1;
+        }
+      });
+      return hours;
+    }
+
+    function summarizeOverview(records) {
+      const total = records.length;
+      const fatal = records.reduce((sum, record) => sum + (record.is_fatal || 0), 0);
+      const counties = new Set(records.map((record) => record.county));
+      return {
+        total,
+        fatal,
+        rate: total ? ((fatal / total) * 100).toFixed(2) : '0.00',
+        counties: counties.size,
+      };
+    }
+
+    function summarizeCounties(records) {
+      const map = new Map();
+      records.forEach((record) => {
+        const key = record.county || 'Unknown';
+        if (!map.has(key)) {
+          map.set(key, { county: key, accidents: 0, fatalities: 0, victims: 0 });
+        }
+        const item = map.get(key);
+        item.accidents += 1;
+        item.fatalities += record.is_fatal || 0;
+        item.victims += record.num_victims || 0;
+      });
+
+      return Array.from(map.values())
+        .map((item) => {
+          const risk = state.countyRiskLookup[item.county] || {};
+          return {
+            county: item.county,
+            accidents: item.accidents,
+            fatalities: item.fatalities,
+            fatality_rate: item.accidents ? ((item.fatalities / item.accidents) * 100).toFixed(2) : '0.00',
+            average_victims: item.accidents ? (item.victims / item.accidents).toFixed(2) : '0.00',
+            risk_level: risk.risk_level || 'Unknown',
+          };
+        })
+        .sort((a, b) => b.accidents - a.accidents);
+    }
+
+    function destroyChart(id) {
+      if (state.charts[id]) {
+        state.charts[id].destroy();
+      }
+    }
+
+    function renderDoughnut(id, labels, values) {
+      destroyChart(id);
+      state.charts[id] = new Chart(document.getElementById(id), {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [{
+            data: values,
+            backgroundColor: ['#1bb35e', '#5a97ff', '#d8a32d', '#d85757', '#7c8a7d'],
+            borderColor: '#08110b',
+            borderWidth: 3,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom' } },
+        },
+      });
+    }
+
+    function renderBar(id, labels, values, color) {
+      destroyChart(id);
+      state.charts[id] = new Chart(document.getElementById(id), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            data: values,
+            backgroundColor: Array.isArray(color) ? color : labels.map(() => color),
+            borderRadius: 8,
+            borderSkipped: false,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.06)' } },
+          },
+        },
+      });
+    }
+
+    function renderLine(id, labels, values) {
+      destroyChart(id);
+      state.charts[id] = new Chart(document.getElementById(id), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Accidents',
+            data: values,
+            borderColor: '#1bb35e',
+            backgroundColor: 'rgba(27, 179, 94, 0.15)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 2,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.03)' } },
+            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.06)' } },
+          },
+        },
+      });
+    }
+
+    function renderModelTable(models) {
+      const tbody = document.getElementById('modelTableBody');
+      tbody.innerHTML = models.map((item) => `
+        <tr>
+          <td>${item.name}${item.best ? ' (Best AUC)' : ''}</td>
+          <td>${item.task}</td>
+          <td>${formatMetric(item.accuracy)}</td>
+          <td>${formatMetric(item.precision)}</td>
+          <td>${formatMetric(item.recall)}</td>
+          <td>${formatMetric(item.f1_score)}</td>
+          <td>${formatMetric(item.auc_roc)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderCountyTable(rows) {
+      const tbody = document.getElementById('countyTableBody');
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="6" class="empty">No records match the current filters.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rows.slice(0, 12).map((item) => `
+        <tr>
+          <td>${item.county}</td>
+          <td>${item.accidents}</td>
+          <td>${item.fatalities}</td>
+          <td>${item.fatality_rate}%</td>
+          <td>${item.average_victims}</td>
+          <td><span class="risk-pill ${riskClass(item.risk_level)}">${item.risk_level}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function fillOverview(summary) {
+      document.getElementById('totalAccidents').textContent = summary.total.toLocaleString();
+      document.getElementById('fatalAccidents').textContent = summary.fatal.toLocaleString();
+      document.getElementById('fatalityRate').textContent = `${summary.rate}%`;
+      document.getElementById('countiesCovered').textContent = summary.counties.toLocaleString();
+    }
+
+    function closeAllSelects() {
+      document.querySelectorAll('.custom-select.open').forEach((element) => {
+        element.classList.remove('open');
+        element.querySelector('.select-trigger').setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    function setCustomSelectValue(selectId, value, label) {
+      const select = document.getElementById(selectId);
+      select.dataset.value = value;
+      select.querySelector('.select-value').textContent = label;
+      select.querySelectorAll('.select-option').forEach((option) => {
+        option.classList.toggle('active', option.dataset.value === value);
+      });
+    }
+
+    function populateSelect(selectId, values, placeholder) {
+      const select = document.getElementById(selectId);
+      const menu = select.querySelector('.select-menu');
+      const normalized = values.map((value) =>
+        typeof value === 'string' ? { value, label: value } : value
+      );
+      const options = [{ value: '', label: placeholder }].concat(normalized);
+
+      menu.innerHTML = options.map((option) => `
+        <button class="select-option${option.value === '' ? ' active' : ''}" type="button" data-value="${option.value}">
+          ${option.label}
+        </button>
+      `).join('');
+
+      setCustomSelectValue(selectId, '', placeholder);
+    }
+
+    function saveFilters() {
+      localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(state.filters));
+    }
+
+    function loadSavedFilters() {
+      try {
+        const raw = localStorage.getItem(FILTER_STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        state.filters = {
+          county: typeof parsed.county === 'string' ? parsed.county : '',
+          cause_code: typeof parsed.cause_code === 'string' ? parsed.cause_code : '',
+          time_of_day: typeof parsed.time_of_day === 'string' ? parsed.time_of_day : '',
+        };
+      } catch (error) {
+        console.error('Could not read saved filters', error);
+      }
+    }
+
+    function syncFilterUIFromState() {
+      const countyLabel = state.filters.county || 'All counties';
+      const causeLabel = state.filters.cause_code
+        ? document.querySelector(`#causeFilter .select-option[data-value="${CSS.escape(state.filters.cause_code)}"]`)?.textContent.trim() || state.filters.cause_code
+        : 'All causes';
+      const timeLabel = state.filters.time_of_day || 'All times';
+
+      setCustomSelectValue('countyFilter', state.filters.county, countyLabel);
+      setCustomSelectValue('causeFilter', state.filters.cause_code, causeLabel);
+      setCustomSelectValue('timeFilter', state.filters.time_of_day, timeLabel);
+    }
+
+    async function fetchJson(path) {
+      const response = await fetch(`${API_BASE}${path}`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} for ${path}`);
+      }
+      return response.json();
+    }
+
+    async function loadInitialData() {
+      const [dashboard, filters] = await Promise.all([
+        fetchJson('/api/dashboard'),
+        fetchJson('/api/filters'),
+      ]);
+
+      state.models = dashboard.models;
+      state.countyRiskLookup = Object.fromEntries(
+        dashboard.counties.map((item) => [item.county, item])
+      );
+
+      populateSelect('countyFilter', filters.counties, 'All counties');
+      populateSelect('causeFilter', filters.causes, 'All causes');
+      populateSelect('timeFilter', filters.time_of_day, 'All times');
+      syncFilterUIFromState();
+      renderModelTable(state.models);
+    }
+
+    async function refreshFilteredView() {
+      const params = new URLSearchParams();
+      if (state.filters.county) params.set('county', state.filters.county);
+      if (state.filters.cause_code) params.set('cause_code', state.filters.cause_code);
+      if (state.filters.time_of_day) params.set('time_of_day', state.filters.time_of_day);
+
+      const records = await fetchJson(`/api/records${params.toString() ? `?${params.toString()}` : ''}`);
+      const overview = summarizeOverview(records);
+      const timeData = TIME_ORDER.map((name) => ({ name, count: records.filter((record) => record.time_of_day === name).length })).filter((item) => item.count > 0);
+      const hourData = countHours(records);
+      const victimData = countBy(records, 'victim_category').slice(0, 8);
+      const causeData = countBy(records, 'cause_code').slice(0, 8);
+      const countyRows = summarizeCounties(records);
+
+      fillOverview(overview);
+      renderCountyTable(countyRows);
+      renderDoughnut('timeChart', timeData.map((item) => item.name), timeData.map((item) => item.count));
+      renderLine('hourChart', hourData.map((item) => `${item.hour}:00`), hourData.map((item) => item.count));
+      renderBar('victimChart', victimData.map((item) => item.name), victimData.map((item) => item.count), palette);
+      renderBar('causeChart', causeData.map((item) => item.name), causeData.map((item) => item.count), '#5a97ff');
+      setStatus(true, `Backend connected. Showing ${records.length.toLocaleString()} filtered records.`);
+    }
+
+    function bindControls() {
+      document.querySelectorAll('.custom-select').forEach((select) => {
+        const trigger = select.querySelector('.select-trigger');
+        const menu = select.querySelector('.select-menu');
+        const filterKey = select.dataset.filter;
+
+        trigger.addEventListener('click', (event) => {
+          event.stopPropagation();
+          const isOpen = select.classList.contains('open');
+          closeAllSelects();
+          if (!isOpen) {
+            select.classList.add('open');
+            trigger.setAttribute('aria-expanded', 'true');
+          }
+        });
+
+        menu.addEventListener('click', async (event) => {
+          const option = event.target.closest('.select-option');
+          if (!option) return;
+          const value = option.dataset.value;
+          const label = option.textContent.trim();
+          state.filters[filterKey] = value;
+          setCustomSelectValue(select.id, value, label);
+          saveFilters();
+          closeAllSelects();
+          await refreshFilteredView();
+        });
+      });
+
+      document.getElementById('resetFilters').addEventListener('click', async () => {
+        state.filters = { county: '', cause_code: '', time_of_day: '' };
+        setCustomSelectValue('countyFilter', '', 'All counties');
+        setCustomSelectValue('causeFilter', '', 'All causes');
+        setCustomSelectValue('timeFilter', '', 'All times');
+        saveFilters();
+        await refreshFilteredView();
+      });
+
+      document.addEventListener('click', () => {
+        closeAllSelects();
+      });
+    }
+
+    async function init() {
+      try {
+        loadSavedFilters();
+        await loadInitialData();
+        bindControls();
+        await refreshFilteredView();
+      } catch (error) {
+        console.error(error);
+        setStatus(false, 'Backend not reachable at http://127.0.0.1:8000');
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
