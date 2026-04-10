@@ -181,6 +181,24 @@ def get_models() -> List[dict]:
                 "best": False if pd.isna(auc) or pd.isna(best_auc) else float(auc) == float(best_auc),
             }
         )
+
+    has_kmeans = any(item["name"].strip().lower() == "k-means clustering" for item in items)
+    if not has_kmeans:
+        items.append(
+            {
+                "name": "K-Means Clustering",
+                "task": "Clustering",
+                "accuracy": None,
+                "precision": None,
+                "recall": None,
+                "f1_score": None,
+                "auc_roc": None,
+                "mae": None,
+                "rmse": None,
+                "r2": None,
+                "best": False,
+            }
+        )
     return items
 
 
