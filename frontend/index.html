@@ -17,13 +17,14 @@
   --red:    #BB0000;
   --gold:   #CC8800;
   --blue:   #0055AA;
-  --bg:     #0a0d0a;
-  --bg2:    #111511;
-  --bg3:    #161c16;
-  --card:   #131913;
-  --border: rgba(0,150,0,0.18);
-  --text:   #e8f0e8;
-  --muted:  #7a9a7a;
+  --bg:     #aebea7;
+  --bg2:    #9fb29a;
+  --bg3:    #8fa58d;
+  --card:   #f4f8f3;
+  --card-strong: #edf4ed;
+  --border: rgba(37, 92, 43, 0.18);
+  --text:   #1f3524;
+  --muted:  #58705d;
   --font:   'Sora', sans-serif;
   --mono:   'JetBrains Mono', monospace;
 }
@@ -32,7 +33,9 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font);
-  background: var(--bg);
+  background:
+    radial-gradient(circle at top right, rgba(228, 238, 226, 0.18), transparent 22%),
+    linear-gradient(180deg, #b7c7b2 0%, var(--bg) 34%, #97ab95 100%);
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
@@ -51,7 +54,7 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
-  opacity: 0.4;
+  opacity: 0.12;
 }
 
 /* ── Nav ───────────────────────────────────────────── */
@@ -59,7 +62,7 @@ nav {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 100;
-  background: rgba(10,13,10,0.92);
+  background: rgba(182, 200, 178, 0.88);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
   padding: 0 32px;
@@ -76,7 +79,7 @@ nav {
   font-weight: 700;
   font-size: 0.95rem;
   letter-spacing: -0.3px;
-  color: #fff;
+  color: var(--text);
 }
 
 .nav-brand .dot {
@@ -102,11 +105,65 @@ nav {
   border-radius: 6px;
   transition: all 0.2s;
   font-weight: 500;
+  border: 1px solid transparent;
 }
 
 .nav-links a:hover {
-  color: #fff;
-  background: rgba(0,150,0,0.15);
+  color: var(--text);
+  background: rgba(0,150,0,0.10);
+}
+
+.nav-links a.is-active {
+  color: var(--text);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px rgba(37, 92, 43, 0.16);
+}
+
+.nav-links a.nav-overview {
+  color: #2f6fc4;
+  background: rgba(47, 111, 196, 0.10);
+}
+
+.nav-links a.nav-time {
+  color: #b97a00;
+  background: rgba(185, 122, 0, 0.10);
+}
+
+.nav-links a.nav-victims {
+  color: #2c8b46;
+  background: rgba(44, 139, 70, 0.10);
+}
+
+.nav-links a.nav-causes {
+  color: #b14a4a;
+  background: rgba(177, 74, 74, 0.10);
+}
+
+.nav-links a.nav-counties {
+  color: #2e9b92;
+  background: rgba(46, 155, 146, 0.10);
+}
+
+.nav-links a.nav-models {
+  color: #8f68bf;
+  background: rgba(143, 104, 191, 0.10);
+}
+
+.nav-links a.nav-recommendations {
+  color: #7f5a32;
+  background: rgba(127, 90, 50, 0.12);
+}
+
+.nav-links a.nav-overview:hover,
+.nav-links a.nav-time:hover,
+.nav-links a.nav-victims:hover,
+.nav-links a.nav-causes:hover,
+.nav-links a.nav-counties:hover,
+.nav-links a.nav-models:hover,
+.nav-links a.nav-recommendations:hover {
+  color: var(--text);
+  border-color: rgba(37, 92, 43, 0.14);
+  transform: translateY(-1px);
 }
 
 /* ── Layout ────────────────────────────────────────── */
@@ -149,7 +206,7 @@ nav {
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -2px;
-  color: #fff;
+  color: var(--text);
   margin-bottom: 20px;
 }
 
@@ -175,15 +232,23 @@ nav {
   font-family: var(--mono);
   font-size: 0.75rem;
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(37, 92, 43, 0.20);
+  background: rgba(244, 248, 243, 0.72);
   padding: 4px 10px;
   border-radius: 4px;
 }
 
 /* ── Section ───────────────────────────────────────── */
 .section {
+  --section-accent: #2c8b46;
+  --section-accent-soft: rgba(44, 139, 70, 0.10);
+  --section-accent-strong: rgba(44, 139, 70, 0.18);
   margin-bottom: 64px;
   scroll-margin-top: 80px;
+  padding: 20px 18px 24px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .section-header {
@@ -195,10 +260,84 @@ nav {
   border-bottom: 1px solid var(--border);
 }
 
+.section-title span {
+  color: var(--section-accent);
+}
+
+.section.is-active {
+  background: linear-gradient(180deg, var(--section-accent-soft) 0%, rgba(244, 248, 243, 0.42) 100%);
+  border-color: var(--section-accent-strong);
+  box-shadow: 0 18px 34px rgba(28, 60, 33, 0.08);
+}
+
+.section.is-active .section-header {
+  border-bottom-color: var(--section-accent-strong);
+}
+
+.section.is-active .section-num {
+  color: var(--section-accent);
+}
+
+.section.is-active .chart-card,
+.section.is-active .kpi-card,
+.section.is-active .insight-card,
+.section.is-active .rec-card,
+.section.is-active .finding-box {
+  border-color: var(--section-accent-strong);
+}
+
+.section-overview {
+  --section-accent: #2f6fc4;
+  --section-accent-soft: rgba(47, 111, 196, 0.10);
+  --section-accent-strong: rgba(47, 111, 196, 0.22);
+}
+
+.section-time {
+  --section-accent: #b97a00;
+  --section-accent-soft: rgba(185, 122, 0, 0.10);
+  --section-accent-strong: rgba(185, 122, 0, 0.22);
+}
+
+.section-victims {
+  --section-accent: #b14a4a;
+  --section-accent-soft: rgba(177, 74, 74, 0.10);
+  --section-accent-strong: rgba(177, 74, 74, 0.22);
+}
+
+.section-causes {
+  --section-accent: #8f68bf;
+  --section-accent-soft: rgba(143, 104, 191, 0.10);
+  --section-accent-strong: rgba(143, 104, 191, 0.22);
+}
+
+.section-counties {
+  --section-accent: #2e9b92;
+  --section-accent-soft: rgba(46, 155, 146, 0.10);
+  --section-accent-strong: rgba(46, 155, 146, 0.22);
+}
+
+.section-models {
+  --section-accent: #2c8b46;
+  --section-accent-soft: rgba(44, 139, 70, 0.10);
+  --section-accent-strong: rgba(44, 139, 70, 0.22);
+}
+
+.section-recommendations {
+  --section-accent: #7f5a32;
+  --section-accent-soft: rgba(127, 90, 50, 0.10);
+  --section-accent-strong: rgba(127, 90, 50, 0.22);
+}
+
+.section-limitations {
+  --section-accent: #6f8a73;
+  --section-accent-soft: rgba(111, 138, 115, 0.10);
+  --section-accent-strong: rgba(111, 138, 115, 0.20);
+}
+
 .section-title {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
   letter-spacing: -0.5px;
 }
 
@@ -213,35 +352,36 @@ nav {
 }
 
 .finding-box {
-  background: linear-gradient(135deg, rgba(0,100,0,0.12), rgba(0,80,0,0.06));
-  border: 1px solid rgba(0,150,0,0.25);
+  background: linear-gradient(135deg, rgba(236,245,237,0.98), rgba(224,237,226,0.95));
+  border: 1px solid rgba(0,120,0,0.22);
   border-radius: 12px;
   padding: 18px 22px;
   margin-bottom: 20px;
   font-size: 0.9rem;
   line-height: 1.7;
-  color: #cce8cc;
+  color: #234127;
+  box-shadow: 0 10px 24px rgba(20, 55, 24, 0.06);
 }
 
 .finding-box strong {
-  color: #90ee90;
+  color: #0d6b27;
 }
 
 .finding-box.red {
-  background: linear-gradient(135deg, rgba(150,0,0,0.12), rgba(100,0,0,0.06));
-  border-color: rgba(200,0,0,0.25);
-  color: #f0c0c0;
+  background: linear-gradient(135deg, rgba(251,236,236,0.98), rgba(244,223,223,0.96));
+  border-color: rgba(187,0,0,0.22);
+  color: #6e1f1f;
 }
 
-.finding-box.red strong { color: #ff9999; }
+.finding-box.red strong { color: #a32020; }
 
 .finding-box.gold {
-  background: linear-gradient(135deg, rgba(150,100,0,0.12), rgba(100,70,0,0.06));
-  border-color: rgba(200,140,0,0.25);
-  color: #f0d890;
+  background: linear-gradient(135deg, rgba(250,239,208,0.98), rgba(242,223,175,0.96));
+  border-color: rgba(204,136,0,0.30);
+  color: #624400;
 }
 
-.finding-box.gold strong { color: #ffd060; }
+.finding-box.gold strong { color: #b36b00; }
 
 /* ── KPI Grid ──────────────────────────────────────── */
 .kpi-grid {
@@ -252,13 +392,14 @@ nav {
 }
 
 .kpi-card {
-  background: var(--card);
+  background: linear-gradient(180deg, var(--card) 0%, var(--card-strong) 100%);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 22px 20px;
   position: relative;
   overflow: hidden;
   transition: border-color 0.3s;
+  box-shadow: 0 10px 24px rgba(28, 60, 33, 0.05);
 }
 
 .kpi-card:hover { border-color: var(--green); }
@@ -287,15 +428,15 @@ nav {
 .kpi-value {
   font-size: 2.4rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--text);
   line-height: 1;
   letter-spacing: -1px;
 }
 
 .kpi-value.green  { color: var(--green2); }
-.kpi-value.red    { color: #ff6666; }
-.kpi-value.blue   { color: #6699ff; }
-.kpi-value.gold   { color: #ffcc44; }
+.kpi-value.red    { color: #d44747; }
+.kpi-value.blue   { color: #2f6fc4; }
+.kpi-value.gold   { color: #b97a00; }
 
 .kpi-sub {
   font-size: 0.75rem;
@@ -312,11 +453,12 @@ nav {
 }
 
 .chart-card {
-  background: var(--card);
+  background: linear-gradient(180deg, var(--card) 0%, var(--card-strong) 100%);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 22px;
   transition: border-color 0.3s;
+  box-shadow: 0 12px 28px rgba(19, 49, 24, 0.05);
 }
 
 .chart-card:hover { border-color: rgba(0,150,0,0.4); }
@@ -326,7 +468,7 @@ nav {
 .chart-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #ddd;
+  color: var(--text);
   margin-bottom: 4px;
   letter-spacing: -0.3px;
 }
@@ -360,34 +502,34 @@ nav {
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--muted);
+  color: #5d735f;
   border-bottom: 1px solid var(--border);
 }
 
 .data-table td {
   padding: 10px 14px;
-  border-bottom: 1px solid rgba(0,100,0,0.08);
-  color: #ccc;
+  border-bottom: 1px solid rgba(37, 92, 43, 0.10);
+  color: #4a6150;
 }
 
-.data-table tr:hover td { background: rgba(0,100,0,0.05); }
+.data-table tr:hover td { background: rgba(65, 120, 72, 0.07); }
 
-.data-table td:first-child { color: #fff; font-weight: 600; }
+.data-table td:first-child { color: var(--text); font-weight: 600; }
 
 .risk-badge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 8px;
-  border-radius: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
   font-family: var(--mono);
   font-size: 0.68rem;
   font-weight: 600;
 }
 
-.risk-high   { background: rgba(187,0,0,0.2);   color: #ff8888; border: 1px solid rgba(187,0,0,0.3); }
-.risk-medium { background: rgba(180,120,0,0.2); color: #ffcc44; border: 1px solid rgba(180,120,0,0.3); }
-.risk-low    { background: rgba(0,130,0,0.2);   color: #66cc66; border: 1px solid rgba(0,130,0,0.3); }
+.risk-high   { background: #f5dada; color: #b13a3a; border: 1px solid #df9d9d; }
+.risk-medium { background: #f3e5bd; color: #9b6a00; border: 1px solid #d9bc72; }
+.risk-low    { background: #d9efd9; color: #2c8b46; border: 1px solid #9fd0a6; }
 
 /* ── Bar lists ─────────────────────────────────────── */
 .bar-list { display: flex; flex-direction: column; gap: 10px; }
@@ -401,7 +543,7 @@ nav {
 
 .bar-item-label {
   font-size: 0.8rem;
-  color: #ccc;
+  color: #47604b;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -409,7 +551,7 @@ nav {
 
 .bar-track {
   height: 8px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(73, 111, 80, 0.14);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -441,11 +583,12 @@ nav {
 }
 
 .model-card {
-  background: var(--card);
+  background: linear-gradient(180deg, var(--card) 0%, var(--card-strong) 100%);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 20px;
   transition: all 0.3s;
+  box-shadow: 0 10px 24px rgba(28, 60, 33, 0.04);
 }
 
 .model-card:hover {
@@ -455,13 +598,13 @@ nav {
 
 .model-card.best {
   border-color: var(--green2);
-  background: linear-gradient(135deg, rgba(0,100,0,0.15), var(--card));
+  background: linear-gradient(135deg, rgba(179, 220, 184, 0.45), var(--card));
 }
 
 .model-name {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
   margin-bottom: 4px;
   display: flex;
   align-items: center;
@@ -491,7 +634,7 @@ nav {
   justify-content: space-between;
   align-items: center;
   padding: 6px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(37, 92, 43, 0.08);
   font-size: 0.8rem;
 }
 
@@ -502,7 +645,7 @@ nav {
 .metric-val {
   font-family: var(--mono);
   font-weight: 600;
-  color: #fff;
+  color: var(--text);
 }
 
 .metric-val.highlight { color: var(--green2); }
@@ -517,10 +660,11 @@ nav {
 }
 
 .insight-card {
-  background: var(--card);
+  background: linear-gradient(180deg, var(--card) 0%, var(--card-strong) 100%);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 18px 20px;
+  box-shadow: 0 10px 24px rgba(28, 60, 33, 0.04);
 }
 
 .insight-num {
@@ -535,7 +679,7 @@ nav {
 .insight-title {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #ddd;
+  color: var(--text);
   margin-bottom: 6px;
 }
 
@@ -556,11 +700,12 @@ nav {
   display: flex;
   gap: 16px;
   align-items: flex-start;
-  background: var(--card);
+  background: linear-gradient(180deg, var(--card) 0%, var(--card-strong) 100%);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 18px 20px;
   transition: border-color 0.3s;
+  box-shadow: 0 10px 24px rgba(28, 60, 33, 0.04);
 }
 
 .rec-card:hover { border-color: var(--green); }
@@ -581,7 +726,7 @@ nav {
 .rec-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #ddd;
+  color: var(--text);
   margin-bottom: 4px;
 }
 
@@ -640,7 +785,8 @@ footer {
   align-items: center;
   padding: 8px 12px;
   border-radius: 999px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(37, 92, 43, 0.18);
+  background: rgba(244, 248, 243, 0.82);
   font-family: var(--mono);
   font-size: 0.72rem;
   color: var(--muted);
@@ -658,12 +804,13 @@ footer {
 
 .filter-panel {
   margin-bottom: 32px;
-  background: linear-gradient(135deg, rgba(0,100,0,0.10), rgba(0,80,0,0.04));
-  border: 1px solid rgba(0,150,0,0.24);
+  background: linear-gradient(135deg, rgba(233,242,234,0.96), rgba(220,234,223,0.92));
+  border: 1px solid rgba(37, 92, 43, 0.18);
   border-radius: 16px;
   padding: 18px;
   position: relative;
   z-index: 3000;
+  box-shadow: 0 14px 28px rgba(28, 60, 33, 0.05);
 }
 
 .filter-grid {
@@ -690,8 +837,8 @@ footer {
 .filter-button {
   width: 100%;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(37, 92, 43, 0.16);
+  background: rgba(244, 248, 243, 0.92);
   color: var(--text);
   padding: 12px 14px;
   font-family: var(--font);
@@ -733,9 +880,9 @@ footer {
   overflow-y: auto;
   padding: 8px;
   border-radius: 16px;
-  border: 1px solid rgba(0,150,0,0.25);
-  background: rgba(8,13,8,0.98);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.34);
+  border: 1px solid rgba(37, 92, 43, 0.18);
+  background: rgba(239, 246, 240, 0.98);
+  box-shadow: 0 20px 40px rgba(28, 60, 33, 0.14);
 }
 
 .custom-select.open .select-menu { display: block; }
@@ -755,13 +902,13 @@ footer {
 .select-option:hover,
 .select-option.active {
   background: rgba(0,150,0,0.16);
-  color: #fff;
+  color: var(--text);
 }
 
 .filter-button {
   cursor: pointer;
   font-weight: 700;
-  background: linear-gradient(135deg, rgba(0,120,0,0.28), rgba(0,85,170,0.12));
+  background: linear-gradient(135deg, rgba(184, 219, 189, 0.95), rgba(210, 230, 212, 0.95));
 }
 
 @media (max-width: 900px) {
@@ -783,13 +930,13 @@ footer {
     Kenya Road Safety Analytics
   </div>
   <ul class="nav-links">
-    <li><a href="#overview">Overview</a></li>
-    <li><a href="#time">Time Analysis</a></li>
-    <li><a href="#victims">Victims</a></li>
-    <li><a href="#causes">Causes</a></li>
-    <li><a href="#counties">Counties</a></li>
-    <li><a href="#models">ML Models</a></li>
-    <li><a href="#recommendations">Recommendations</a></li>
+    <li><a class="nav-overview" href="#overview">Overview</a></li>
+    <li><a class="nav-time" href="#time">Time Analysis</a></li>
+    <li><a class="nav-victims" href="#victims">Victims</a></li>
+    <li><a class="nav-causes" href="#causes">Causes</a></li>
+    <li><a class="nav-counties" href="#counties">Counties</a></li>
+    <li><a class="nav-models" href="#models">ML Models</a></li>
+    <li><a class="nav-recommendations" href="#recommendations">Recommendations</a></li>
   </ul>
 </nav>
 
@@ -846,7 +993,7 @@ footer {
 </div>
 
 <!-- ── SECTION 1: OVERVIEW ────────────────────────── -->
-<section class="section fade-up" id="overview">
+<section class="section section-overview fade-up" id="overview">
   <div class="section-header">
     <div class="section-title"><span>01.</span> Dataset Overview</div>
     <div class="section-num">Summary Statistics</div>
@@ -895,7 +1042,7 @@ footer {
 </section>
 
 <!-- ── SECTION 2: TIME ANALYSIS ───────────────────── -->
-<section class="section" id="time">
+<section class="section section-time" id="time">
   <div class="section-header">
     <div class="section-title"><span>02.</span> Time of Day Analysis</div>
     <div class="section-num">RQ2 — When are accidents most frequent?</div>
@@ -944,7 +1091,7 @@ footer {
 </section>
 
 <!-- ── SECTION 3: VICTIMS ──────────────────────────── -->
-<section class="section" id="victims">
+<section class="section section-victims" id="victims">
   <div class="section-header">
     <div class="section-title"><span>03.</span> Victim Analysis</div>
     <div class="section-num">RQ4 & RQ5 — Who is most at risk?</div>
@@ -991,7 +1138,7 @@ footer {
 </section>
 
 <!-- ── SECTION 4: CAUSES ───────────────────────────── -->
-<section class="section" id="causes">
+<section class="section section-causes" id="causes">
   <div class="section-header">
     <div class="section-title"><span>04.</span> Accident Causes</div>
     <div class="section-num">RQ3 — What causes Kenya's road accidents?</div>
@@ -1025,7 +1172,7 @@ footer {
 </section>
 
 <!-- ── SECTION 5: COUNTIES ─────────────────────────── -->
-<section class="section" id="counties">
+<section class="section section-counties" id="counties">
   <div class="section-header">
     <div class="section-title"><span>05.</span> County Risk Analysis</div>
     <div class="section-num">RQ1 & RQ6 — Where are accidents concentrated?</div>
@@ -1073,7 +1220,7 @@ footer {
 </section>
 
 <!-- ── SECTION 6: ML MODELS ────────────────────────── -->
-<section class="section" id="models">
+<section class="section section-models" id="models">
   <div class="section-header">
     <div class="section-title"><span>06.</span> Machine Learning Models</div>
     <div class="section-num">RQ7–RQ10 — Prediction & Risk Modelling</div>
@@ -1110,7 +1257,7 @@ footer {
 </section>
 
 <!-- ── SECTION 7: RECOMMENDATIONS ─────────────────── -->
-<section class="section" id="recommendations">
+<section class="section section-recommendations" id="recommendations">
   <div class="section-header">
     <div class="section-title"><span>07.</span> Recommendations</div>
     <div class="section-num">Evidence-based actions for NTSA & County Governments</div>
@@ -1181,7 +1328,7 @@ footer {
 </section>
 
 <!-- ── SECTION 8: LIMITATIONS ─────────────────────── -->
-<section class="section" id="limitations">
+<section class="section section-limitations" id="limitations">
   <div class="section-header">
     <div class="section-title"><span>08.</span> Limitations & Caveats</div>
     <div class="section-num">Honest assessment of the data</div>
@@ -1194,7 +1341,7 @@ footer {
       <div class="insight-desc">Data covers only June 2016. Seasonal patterns and year-on-year trends cannot be analysed. A multi-year dataset is needed for reliable trend modelling.</div>
     </div>
     <div class="insight-card">
-      <div class="insight-num" style="color:#ffcc44;">20%</div>
+      <div class="insight-num" style="color:#b97a00;">20%</div>
       <div class="insight-title">Unknown Causes</div>
       <div class="insight-desc">Cause code 98 (Other/Unknown) accounts for 20% of records — one in five accidents has no identifiable cause. This limits prevention targeting.</div>
     </div>
@@ -1204,7 +1351,7 @@ footer {
       <div class="insight-desc">Only 14.2% of accidents are fatal. This imbalance means models can achieve high accuracy by predicting everything as non-fatal — recall must be monitored carefully.</div>
     </div>
     <div class="insight-card">
-      <div class="insight-num" style="color:#ffcc44;">~</div>
+      <div class="insight-num" style="color:#b97a00;">~</div>
       <div class="insight-title">Underreporting</div>
       <div class="insight-desc">Many rural accidents are never officially recorded. The dataset likely represents a fraction of actual accidents, especially in counties with limited police presence.</div>
     </div>
@@ -1214,7 +1361,7 @@ footer {
 </div><!-- /wrapper -->
 
 <footer>
-  <strong style="color:#66cc66;">Kenya Road Accident Analytics & Risk Prediction System</strong><br>
+  <strong style="color:#2c8b46;">Kenya Road Accident Analytics & Risk Prediction System</strong><br>
   Computer Science Department &nbsp;·&nbsp; End-Year Project 2025/2026 &nbsp;·&nbsp;
   Data Source: Kaggle Kenya &nbsp;·&nbsp; 1,119 Records &nbsp;·&nbsp; June 2016
 </footer>
@@ -1225,7 +1372,7 @@ footer {
 const API_BASE='http://127.0.0.1:8000';
 const FILTER_STORAGE_KEY='kenya-road-safety-filters';
 const TIME_ORDER=['Morning','Afternoon','Evening','Night','Unknown'];
-const COLORS={green:'#00cc00',red:'#ff4444',blue:'#4488ff',gold:'#ffcc44',purple:'#cc66ff',teal:'#44cccc',orange:'#ff8844',muted:'#557755'};
+const COLORS={green:'#18933a',red:'#d44747',blue:'#2f6fc4',gold:'#b97a00',purple:'#8f68bf',teal:'#2e9b92',orange:'#d17a28',muted:'#6f8a73'};
 const PALETTE=[COLORS.green,COLORS.red,COLORS.blue,COLORS.gold,COLORS.purple,COLORS.teal,COLORS.orange,COLORS.muted];
 let DATA={timeOfDay:{},hour:{},victims:{},victimFatalRate:{},victimFatalCount:{},gender:{},age:{},causes:[],counties:[],roads:[],models:[],featureImportance:[{name:'Cause Code',pct:31},{name:'Hour of Day',pct:24},{name:'County',pct:18},{name:'Victim Type',pct:14},{name:'Road',pct:8},{name:'Num Victims',pct:5}]};
 const state={charts:{},filters:{county:'',cause_code:'',time_of_day:''},countyRiskLookup:{},causeLabels:{}};
@@ -1248,13 +1395,13 @@ function summarizeCauses(records){return Object.entries(countBy(records,'cause_c
 function syncHeroAndKpis(records){const total=records.length,fatal=records.reduce((s,r)=>s+(r.is_fatal||0),0),victims=records.reduce((s,r)=>s+(r.num_victims||0),0),counties=new Set(records.map((r)=>r.county)).size,nonFatal=total-fatal,highRisk=DATA.counties.filter((c)=>c.risk==='High Risk').length; const tags=document.querySelectorAll('.hero-tag'); if(tags.length>=4){tags[0].textContent=`${total.toLocaleString()} accident records`; tags[1].textContent=`${counties.toLocaleString()} counties`; tags[3].textContent=`${DATA.models.length} ML models`;} const vals=document.querySelectorAll('.kpi-value'); const subs=document.querySelectorAll('.kpi-sub'); if(vals.length>=6){vals[0].textContent=total.toLocaleString(); vals[1].textContent=fatal.toLocaleString(); vals[2].textContent=victims.toLocaleString(); vals[3].textContent=counties.toLocaleString(); vals[4].textContent=nonFatal.toLocaleString(); vals[5].textContent=highRisk.toLocaleString();} if(subs.length>=3){subs[0].textContent=`Across ${counties} Kenyan counties`; subs[1].textContent=`${total?((fatal/total)*100).toFixed(1):'0.0'}% of filtered accidents`; subs[2].textContent=`Avg ${total?(victims/total).toFixed(2):'0.00'} victims per accident`;}}
 function destroyCharts(){Object.values(state.charts).forEach((chart)=>chart.destroy()); state.charts={};}
 function buildCharts(){destroyCharts(); const hours=Object.keys(DATA.hour).map(Number); const fatalLabels=Object.keys(DATA.victimFatalRate).filter((k)=>k!=='Unknown'&&k!=='Other'); const top10=DATA.counties.slice(0,10); const fatalCounties=DATA.counties.filter((c)=>c.accidents>=5&&c.rate>0).sort((a,b)=>b.rate-a.rate).slice(0,10); const classModels=DATA.models.filter((m)=>m.auc!=='N/A'); state.charts.timeChart=new Chart(document.getElementById('timeChart'),{type:'doughnut',data:{labels:Object.keys(DATA.timeOfDay),datasets:[{data:Object.values(DATA.timeOfDay),backgroundColor:[COLORS.orange,'#1A237E',COLORS.red,COLORS.gold,COLORS.muted],borderColor:'#0a0d0a',borderWidth:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true}}}}}); state.charts.hourChart=new Chart(document.getElementById('hourChart'),{type:'line',data:{labels:hours.map((h)=>h+':00'),datasets:[{label:'Accidents',data:Object.values(DATA.hour),borderColor:COLORS.green,backgroundColor:'rgba(0,204,0,0.08)',borderWidth:2,pointRadius:3,pointBackgroundColor:COLORS.green,fill:true,tension:0.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:gridLines(),ticks:{maxTicksLimit:12}},y:{grid:gridLines(),beginAtZero:true}}}}); state.charts.victimChart=new Chart(document.getElementById('victimChart'),{type:'bar',data:{labels:Object.keys(DATA.victims),datasets:[{data:Object.values(DATA.victims),backgroundColor:PALETTE,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:gridLines(),beginAtZero:true},y:{grid:{display:false}}}}}); state.charts.victimFatalChart=new Chart(document.getElementById('victimFatalChart'),{type:'bar',data:{labels:fatalLabels,datasets:[{data:fatalLabels.map((k)=>DATA.victimFatalRate[k]),backgroundColor:fatalLabels.map((k)=>DATA.victimFatalRate[k]>20?COLORS.red:DATA.victimFatalRate[k]>15?COLORS.orange:DATA.victimFatalRate[k]>10?COLORS.gold:COLORS.muted),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:gridLines(),beginAtZero:true,ticks:{callback:(v)=>v+'%'}}}}}); state.charts.genderChart=new Chart(document.getElementById('genderChart'),{type:'doughnut',data:{labels:Object.keys(DATA.gender),datasets:[{data:Object.values(DATA.gender),backgroundColor:[COLORS.blue,COLORS.purple,COLORS.gold,COLORS.muted],borderColor:'#0a0d0a',borderWidth:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{padding:12,usePointStyle:true}}}}}); state.charts.ageChart=new Chart(document.getElementById('ageChart'),{type:'bar',data:{labels:Object.keys(DATA.age),datasets:[{data:Object.values(DATA.age),backgroundColor:PALETTE,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:gridLines(),beginAtZero:true}}}}); state.charts.causeChart=new Chart(document.getElementById('causeChart'),{type:'bar',data:{labels:DATA.causes.map((c)=>`Code ${c.code} - ${c.name}`),datasets:[{data:DATA.causes.map((c)=>c.count),backgroundColor:DATA.causes.map((c)=>c.code==='98'?COLORS.muted:c.code==='26'||c.code==='10'?COLORS.red:c.code==='29'?COLORS.orange:COLORS.green),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:gridLines(),beginAtZero:true},y:{grid:{display:false},ticks:{font:{size:10}}}}}}); state.charts.countyChart=new Chart(document.getElementById('countyChart'),{type:'bar',data:{labels:top10.map((c)=>c.county),datasets:[{data:top10.map((c)=>c.accidents),backgroundColor:top10.map((c)=>c.risk==='High Risk'?COLORS.red:c.risk==='Medium Risk'?COLORS.gold:COLORS.green),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:gridLines(),beginAtZero:true},y:{grid:{display:false}}}}}); state.charts.fatalRateChart=new Chart(document.getElementById('fatalRateChart'),{type:'bar',data:{labels:fatalCounties.map((c)=>c.county),datasets:[{data:fatalCounties.map((c)=>c.rate),backgroundColor:fatalCounties.map((c)=>c.rate>=10?COLORS.red:c.rate>=7?COLORS.orange:COLORS.gold),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:gridLines(),beginAtZero:true,ticks:{callback:(v)=>v+'%'}},y:{grid:{display:false}}}}}); state.charts.aucChart=new Chart(document.getElementById('aucChart'),{type:'bar',data:{labels:classModels.map((m)=>m.name),datasets:[{data:classModels.map((m)=>parseFloat(m.auc)),backgroundColor:classModels.map((m)=>m.best?COLORS.green:COLORS.muted),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:gridLines(),min:0.5,max:0.85}}}}); state.charts.featureChart=new Chart(document.getElementById('featureChart'),{type:'bar',data:{labels:DATA.featureImportance.map((f)=>f.name),datasets:[{data:DATA.featureImportance.map((f)=>f.pct),backgroundColor:DATA.featureImportance.map((f)=>f.pct>=25?COLORS.red:f.pct>=15?COLORS.orange:COLORS.muted),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:gridLines(),beginAtZero:true,ticks:{callback:(v)=>v+'%'}},y:{grid:{display:false}}}}});}
-function buildLists(){const causeEl=document.getElementById('causeBarList'); causeEl.innerHTML=''; const causeMax=DATA.causes.length?DATA.causes[0].count:1; DATA.causes.forEach((c)=>{const pct=Math.round(c.count/causeMax*100); causeEl.innerHTML+=`<div class="bar-item"><div class="bar-item-label"><span style="font-family:var(--mono);color:var(--green2);font-size:0.7rem;">${c.code}</span> - ${c.name}</div><div class="bar-track"><div class="bar-fill ${c.code==='26'||c.code==='10'?'red':c.code==='29'?'gold':''}" style="width:${pct}%;background:${c.code==='98'?COLORS.muted:c.code==='26'||c.code==='10'?COLORS.red:c.code==='29'?COLORS.gold:COLORS.green}"></div></div><div class="bar-val">${c.count}</div></div>`;}); const roadMax=DATA.roads.length?DATA.roads[0].count:1; document.getElementById('roadBarList').innerHTML='<div class="bar-list">'+DATA.roads.map((r)=>{const pct=Math.round(r.count/roadMax*100); return `<div class="bar-item"><div class="bar-item-label">${r.road}</div><div class="bar-track"><div class="bar-fill blue" style="width:${pct}%"></div></div><div class="bar-val" style="color:${COLORS.blue}">${r.count}</div></div>`;}).join('')+'</div>'; let html='<thead><tr><th>County</th><th>Accidents</th><th>Fatalities</th><th>Fatality Rate</th><th>Risk Level</th></tr></thead><tbody>'; DATA.counties.forEach((c)=>{const badge=c.risk==='High Risk'?'risk-high':c.risk==='Medium Risk'?'risk-medium':'risk-low'; const icon=c.risk==='High Risk'?'High':c.risk==='Medium Risk'?'Medium':'Low'; html+=`<tr><td>${c.county}</td><td style="font-family:var(--mono);color:#aaa;">${c.accidents}</td><td style="font-family:var(--mono);color:${c.fatalities>0?'#ff8888':'#557755'};">${c.fatalities}</td><td style="font-family:var(--mono);">${c.rate.toFixed(2)}%</td><td><span class="risk-badge ${badge}">${icon} Risk</span></td></tr>`;}); html+='</tbody>'; document.getElementById('countyTable').innerHTML=html; const modelEl=document.getElementById('modelGrid'); modelEl.innerHTML=''; DATA.models.forEach((m)=>{const isClass=m.task==='Classification'; const isReg=m.task==='Regression'; modelEl.innerHTML+=`<div class="model-card ${m.best?'best':''}"><div class="model-name">${m.name}${m.best?'<span class="best-tag">Best AUC</span>':''}</div><div class="model-task">${m.task}</div>${isClass?`<div class="model-metric"><span class="metric-name">Accuracy</span><span class="metric-val">${m.acc}</span></div><div class="model-metric"><span class="metric-name">Precision</span><span class="metric-val">${m.prec}</span></div><div class="model-metric"><span class="metric-name">Recall</span><span class="metric-val ${parseFloat(m.rec)>=0.7?'highlight':''}">${m.rec}</span></div><div class="model-metric"><span class="metric-name">F1 Score</span><span class="metric-val">${m.f1}</span></div><div class="model-metric"><span class="metric-name">AUC-ROC</span><span class="metric-val highlight">${m.auc}</span></div>`:isReg?`<div class="model-metric"><span class="metric-name">MAE</span><span class="metric-val">${m.mae}</span></div><div class="model-metric"><span class="metric-name">RMSE</span><span class="metric-val">1.190</span></div><div class="model-metric"><span class="metric-name">R2 Score</span><span class="metric-val">${m.r2}</span></div><div class="model-metric"><span class="metric-name">Target</span><span class="metric-val na">num_victims</span></div>`:`<div class="model-metric"><span class="metric-name">K Value</span><span class="metric-val highlight">3</span></div><div class="model-metric"><span class="metric-name">High Risk</span><span class="metric-val">7 counties</span></div><div class="model-metric"><span class="metric-name">Silhouette</span><span class="metric-val na">Validated</span></div><div class="model-metric"><span class="metric-name">Method</span><span class="metric-val na">Elbow</span></div>`}</div>`;});}
+function buildLists(){const causeEl=document.getElementById('causeBarList'); causeEl.innerHTML=''; const causeMax=DATA.causes.length?DATA.causes[0].count:1; DATA.causes.forEach((c)=>{const pct=Math.round(c.count/causeMax*100); causeEl.innerHTML+=`<div class="bar-item"><div class="bar-item-label"><span style="font-family:var(--mono);color:var(--green2);font-size:0.7rem;">${c.code}</span> - ${c.name}</div><div class="bar-track"><div class="bar-fill ${c.code==='26'||c.code==='10'?'red':c.code==='29'?'gold':''}" style="width:${pct}%;background:${c.code==='98'?COLORS.muted:c.code==='26'||c.code==='10'?COLORS.red:c.code==='29'?COLORS.gold:COLORS.green}"></div></div><div class="bar-val">${c.count}</div></div>`;}); const roadMax=DATA.roads.length?DATA.roads[0].count:1; document.getElementById('roadBarList').innerHTML='<div class="bar-list">'+DATA.roads.map((r)=>{const pct=Math.round(r.count/roadMax*100); return `<div class="bar-item"><div class="bar-item-label">${r.road}</div><div class="bar-track"><div class="bar-fill blue" style="width:${pct}%"></div></div><div class="bar-val" style="color:${COLORS.blue}">${r.count}</div></div>`;}).join('')+'</div>'; let html='<thead><tr><th>County</th><th>Accidents</th><th>Fatalities</th><th>Fatality Rate</th><th>Risk Level</th></tr></thead><tbody>'; DATA.counties.forEach((c)=>{const badge=c.risk==='High Risk'?'risk-high':c.risk==='Medium Risk'?'risk-medium':'risk-low'; const icon=c.risk==='High Risk'?'High':c.risk==='Medium Risk'?'Medium':'Low'; html+=`<tr><td>${c.county}</td><td style="font-family:var(--mono);color:#6f7f72;">${c.accidents}</td><td style="font-family:var(--mono);color:${c.fatalities>0?'#c44a4a':'#4f7658'};">${c.fatalities}</td><td style="font-family:var(--mono);">${c.rate.toFixed(2)}%</td><td><span class="risk-badge ${badge}">${icon} Risk</span></td></tr>`;}); html+='</tbody>'; document.getElementById('countyTable').innerHTML=html; const modelEl=document.getElementById('modelGrid'); modelEl.innerHTML=''; DATA.models.forEach((m)=>{const isClass=m.task==='Classification'; const isReg=m.task==='Regression'; modelEl.innerHTML+=`<div class="model-card ${m.best?'best':''}"><div class="model-name">${m.name}${m.best?'<span class="best-tag">Best AUC</span>':''}</div><div class="model-task">${m.task}</div>${isClass?`<div class="model-metric"><span class="metric-name">Accuracy</span><span class="metric-val">${m.acc}</span></div><div class="model-metric"><span class="metric-name">Precision</span><span class="metric-val">${m.prec}</span></div><div class="model-metric"><span class="metric-name">Recall</span><span class="metric-val ${parseFloat(m.rec)>=0.7?'highlight':''}">${m.rec}</span></div><div class="model-metric"><span class="metric-name">F1 Score</span><span class="metric-val">${m.f1}</span></div><div class="model-metric"><span class="metric-name">AUC-ROC</span><span class="metric-val highlight">${m.auc}</span></div>`:isReg?`<div class="model-metric"><span class="metric-name">MAE</span><span class="metric-val">${m.mae}</span></div><div class="model-metric"><span class="metric-name">RMSE</span><span class="metric-val">1.190</span></div><div class="model-metric"><span class="metric-name">R2 Score</span><span class="metric-val">${m.r2}</span></div><div class="model-metric"><span class="metric-name">Target</span><span class="metric-val na">num_victims</span></div>`:`<div class="model-metric"><span class="metric-name">K Value</span><span class="metric-val highlight">3</span></div><div class="model-metric"><span class="metric-name">High Risk</span><span class="metric-val">7 counties</span></div><div class="model-metric"><span class="metric-name">Silhouette</span><span class="metric-val na">Validated</span></div><div class="model-metric"><span class="metric-name">Method</span><span class="metric-val na">Elbow</span></div>`}</div>`;});}
+function bindSectionSpy(){const sections=[...document.querySelectorAll('.section[id]')]; const navLinks=[...document.querySelectorAll('.nav-links a[href^="#"]')]; const navMap=new Map(navLinks.map((link)=>[link.getAttribute('href').slice(1),link])); function setActiveSection(id){sections.forEach((section)=>section.classList.toggle('is-active',section.id===id)); navLinks.forEach((link)=>link.classList.toggle('is-active',link.getAttribute('href')===`#${id}`));} if(!sections.length) return; const initialId=navMap.has(window.location.hash.slice(1))?window.location.hash.slice(1):sections[0].id; setActiveSection(initialId); const observer=new IntersectionObserver((entries)=>{const visibleEntries=entries.filter((entry)=>entry.isIntersecting&&navMap.has(entry.target.id)); if(!visibleEntries.length) return; visibleEntries.sort((a,b)=>b.intersectionRatio-a.intersectionRatio); setActiveSection(visibleEntries[0].target.id);},{rootMargin:'-18% 0px -52% 0px',threshold:[0.2,0.35,0.5,0.7]}); sections.forEach((section)=>observer.observe(section)); navLinks.forEach((link)=>{link.addEventListener('click',()=>{const id=link.getAttribute('href').slice(1); setActiveSection(id);});});}
 async function loadInitialData(){const [dashboard,filters]=await Promise.all([fetchJson('/api/dashboard'),fetchJson('/api/filters')]); state.countyRiskLookup=Object.fromEntries(dashboard.counties.map((item)=>[item.county,item])); filters.causes.forEach((cause)=>{state.causeLabels[cause.value]=cause.label.replace(`${cause.value} - `,'');}); populateSelect('countyFilter',filters.counties,'All counties'); populateSelect('causeFilter',filters.causes,'All causes'); populateSelect('timeFilter',filters.time_of_day,'All times'); syncFilterUI(); DATA.models=dashboard.models.map((m)=>({name:m.name,task:m.task,acc:m.accuracy==null?'N/A':Number(m.accuracy).toFixed(3),prec:m.precision==null?'N/A':Number(m.precision).toFixed(3),rec:m.recall==null?'N/A':Number(m.recall).toFixed(3),f1:m.f1_score==null?'N/A':Number(m.f1_score).toFixed(3),auc:m.auc_roc==null?'N/A':Number(m.auc_roc).toFixed(3),mae:m.mae==null?'N/A':Number(m.mae).toFixed(3),r2:m.r2==null?'N/A':Number(m.r2).toFixed(3),best:m.best}));}
 async function refreshDashboard(){const params=new URLSearchParams(); if(state.filters.county) params.set('county',state.filters.county); if(state.filters.cause_code) params.set('cause_code',state.filters.cause_code); if(state.filters.time_of_day) params.set('time_of_day',state.filters.time_of_day); const records=await fetchJson(`/api/records${params.toString()?`?${params.toString()}`:''}`); const victimStats=victimFatalStats(records); const timeOfDay={}; TIME_ORDER.forEach((k)=>{timeOfDay[k]=0;}); records.forEach((r)=>{const key=r.time_of_day||'Unknown'; timeOfDay[key]=(timeOfDay[key]||0)+1;}); DATA.timeOfDay=timeOfDay; DATA.hour=countHours(records); DATA.victims=countBy(records,'victim_category'); DATA.victimFatalRate=victimStats.rates; DATA.victimFatalCount=victimStats.fatal; DATA.gender=countBy(records,'gender_clean'); DATA.age=countBy(records,'age_group'); DATA.causes=summarizeCauses(records); DATA.counties=summarizeCounties(records); DATA.roads=summarizeRoads(records); syncHeroAndKpis(records); buildCharts(); buildLists(); setStatus(true,`Backend connected. Showing ${records.length.toLocaleString()} filtered records.`);}
 function bindControls(){document.querySelectorAll('.custom-select').forEach((select)=>{const trigger=select.querySelector('.select-trigger'); const menu=select.querySelector('.select-menu'); const filterKey=select.dataset.filter; trigger.addEventListener('click',(event)=>{event.stopPropagation(); const isOpen=select.classList.contains('open'); closeAllSelects(); if(!isOpen){select.classList.add('open'); trigger.setAttribute('aria-expanded','true');}}); menu.addEventListener('click',async (event)=>{const option=event.target.closest('.select-option'); if(!option) return; state.filters[filterKey]=option.dataset.value; setCustomSelectValue(select.id,option.dataset.value,option.textContent.trim()); saveFilters(); closeAllSelects(); await refreshDashboard();});}); document.getElementById('resetFilters').addEventListener('click',async ()=>{state.filters={county:'',cause_code:'',time_of_day:''}; syncFilterUI(); saveFilters(); await refreshDashboard();}); document.addEventListener('click',()=>closeAllSelects());}
-document.addEventListener('DOMContentLoaded',async ()=>{try{loadFilters(); await loadInitialData(); bindControls(); await refreshDashboard();}catch(error){console.error(error); setStatus(false,'Backend not reachable at http://127.0.0.1:8000');}});
+document.addEventListener('DOMContentLoaded',async ()=>{try{loadFilters(); bindSectionSpy(); await loadInitialData(); bindControls(); await refreshDashboard();}catch(error){console.error(error); setStatus(false,'Backend not reachable at http://127.0.0.1:8000');}});
 </script>
 
 </body>
 </html>
-
